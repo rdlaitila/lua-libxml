@@ -86,7 +86,7 @@ end
 -- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function libxml.dom.getAllElements(pObjRef)
 	local self = pObjRef
-	local returnList = libxml.dom.createNodeListObj()
+	local returnList = libxml.dom.createNodeList()
 	
 	recurse = function(pSearchNode)	
 		if pSearchNode.nodeType == 1 then returnList.addItem( pSearchNode ) end
@@ -131,7 +131,7 @@ end
 -- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function libxml.dom.getElementsByTagName(pObjRef, pTagName)	
 	local self 				= pObjRef
-	local returnnodelist 	= libxml.dom.createNodeListObj()
+	local returnnodelist 	= libxml.dom.createNodeList()
 	local stopsearch 		= false
 	local checkTag 			= nil
 	local search 			= {}
@@ -160,7 +160,7 @@ end
 -- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function libxml.dom.getElementsByClassName(pObjRef, pClassName)
 	local self = pObjRef
-	local returnnodelist = libxml.dom.createNodeListObj()
+	local returnnodelist = libxml.dom.createNodeList()
 	local stopsearch = false
 	local checkClass = nil
 	local search = {}		
@@ -189,7 +189,7 @@ end
 -- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function libxml.dom.getElementsByAttributeName( pObjRef, pAttrName )
 	local self = pObjRef
-	local returnnodelist = libxml.dom.createNodeListObj()
+	local returnnodelist = libxml.dom.createNodeList()
 	local stopsearch = false
 	local checkAttr = nil
 	local search = {}		
