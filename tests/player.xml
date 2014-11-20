@@ -1,0 +1,17 @@
+<!-- Comment Test -->
+<players>
+   <player name="Player1">
+      <location xPos="100" yPos="200"/>
+      <item type="weapon" class="rifle" />
+      <item type="ammo" class="rifle" />
+      <item type="healthpack" />
+      <item type="healthpack" />
+      <item type="healthpack" />
+   </player>
+   <player name="Player2">
+      <location xPos="500" yPos="200"/>
+      <item type="weapon" class="pistol" />
+      <item type="ammo" class="pistol" />
+      <item type="healthpack" />      
+   </player>
+</players>
