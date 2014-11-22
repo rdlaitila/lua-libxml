@@ -1,3 +1,19 @@
+--
+-- Class dom
+--
+local dom = LIBXML_UPPERCLASS:define("dom")
+
+--
+-- Holds our various node types
+--
+property : nodeTypes { {
+    "ELEMENT_NODE",
+    "ATTRIBUTE_NODE",
+    "TEXT_NODE",
+    "CDATA_SECTION_NODE",
+    "ENTITY_REFERENCE_NODE",
+} ; get='public' ; set='nobody' }
+
 libxml.dom             = {}
 -- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function libxml.dom.init()
