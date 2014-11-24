@@ -1,7 +1,9 @@
---
--- Class utils
---
-local utils = LIBXML_UPPERCLASS:define("utils")
+-- Load dependencies
+local upperclass = require('libxml_lib_upperclass')
+
+-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+local utils = upperclass:define("utils")
 
 --
 -- Trims a string
@@ -77,4 +79,4 @@ end
 --
 -- Return class
 --
-return LIBXML_UPPERCLASS:compile(utils, {ALLOW_INSTANCE = false, ALLOW_STATIC = true, STRICT_TYPES = true})
+return upperclass:compile(utils, {ALLOW_INSTANCE = false, ALLOW_STATIC = true, STRICT_TYPES = true})

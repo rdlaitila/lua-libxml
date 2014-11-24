@@ -397,12 +397,37 @@ function upperclass:compile(CLASS)
             elseif members[KEY].scope_get == UPPERCLASS_SCOPE_PROTECTED then
                 error("Attempt to access protected member is not implimented")
             end
-        else
+        elseif TABLE.__parent__ ~= nil then
             returnValue = TABLE.__parent__[KEY]
         end    
         
+        -- If we have an __index method, we need to call it, unless caller is from __index
+        if members["__index"] ~= nil and caller.func ~= members["__index"].value then
+            if returnValue == nil then
+                member_lookup = {
+                    name = nil,
+                    default_value = nil,
+                    current_value = nil,
+                    scope_get = nil,
+                    scope_set = nil,
+                }
+            else
+                member_lookup = {
+                    name = KEY,
+                    default_value = members[KEY].value,
+                    current_value = inst.member_values[KEY],
+                    scope_get = members[KEY].scope_get,
+                    scope_set = members[KEY].scope_set,
+                } 
+            end
+            
+            
+            return rawget(members, "__index").value(TABLE, KEY, member_lookup)
+        end
+        
+        -- If we have no return value, error
         if returnValue == nil then
-            error("Attempt to access non-existant member "..KEY.." within class "..imp.name)            
+            error("Attempt to access non-existant member '"..KEY.."' within class '"..imp.name.."'")            
         end
         
         return returnValue
@@ -432,7 +457,7 @@ function upperclass:compile(CLASS)
             end
             
             -- Ensure that the inboudn value type matches the implimentation type
-            if type(VALUE) ~= type(members[KEY].value) then
+            if type(VALUE) ~= type(members[KEY].value) and members[KEY].value ~= nil then
                 error("Attmept to overwrite member property '"..KEY.."' of type '"..type(members[KEY].value).."' with type '"..type(VALUE).."' in class '"..imp.name.."' is disallowed")
             end            
             

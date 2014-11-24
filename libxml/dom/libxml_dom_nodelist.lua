@@ -1,4 +1,4 @@
-function libxml.dom.createNodeList()
+local function NodeList()
     local self = {}
     local self_mt = {}
     setmetatable(self, self_mt)
@@ -50,3 +50,4 @@ function libxml.dom.createNodeList()
     ---------------------------------------------------------------------
     return self
 end
+return NodeList

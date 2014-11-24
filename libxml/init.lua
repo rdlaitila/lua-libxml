@@ -1,23 +1,26 @@
--- Generate global variable to hold our path
-LIBXML_REQUIRE_PATH = (...):match("(.-)[^%.]+$")
+-- Modify our package.path for requires
+local require_path = (...):match("(.-)[^%.]+$"):gsub("%.", "/")
+package.path = package.path .. ";" .. require_path .. "?.lua"
+package.path = package.path .. ";" .. require_path .. "dom/?.lua"
+package.path = package.path .. ";" .. require_path .. "lib/?.lua"
+package.path = package.path .. ";" .. require_path .. "utils/?.lua"
 
--- Require upperclass dependency 
-LIBXML_UPPERCLASS = require(LIBXML_REQUIRE_PATH .. 'upperclass') 
+-- Load dependencies
+local upperclass = require('libxml_lib_upperclass')
 
---
--- Class libxml
---
-local libxml = LIBXML_UPPERCLASS:define("libxml")
+-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+local libxml = upperclass:define("libxml")
 
 --
 -- Holds our utils class
 --
-property : utils { require(LIBXML_REQUIRE_PATH .. 'utils.ns_libxml_utils') ; get='public' ; set='nobody' }
+property : utils { require('libxml_utils_init') ; get='public' ; set='nobody' }
 
 --
 -- Holds our dom class
 --
-property : dom { require(LIBXML_REQUIRE_PATH .. 'dom.ns_libxml_dom') ; get='public' ; set='nobody' }
+property : dom { require('libxml_dom_init') ; get='public' ; set='nobody' }
 
 --
 -- Loads an XML document
@@ -102,4 +105,4 @@ end
 -- 
 -- Return class
 --
-return LIBXML_UPPERCLASS:compile(libxml, {ALLOW_INSTANCE = false, ALLOW_STATIC = true, STRICT_TYPES = true})
+return upperclass:compile(libxml, {ALLOW_INSTANCE = false, ALLOW_STATIC = true, STRICT_TYPES = true})

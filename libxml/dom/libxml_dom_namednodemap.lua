@@ -1,4 +1,4 @@
-function libxml.dom.createNamedNodeMapObj()
+local function NamedNodeMap()
     local self = {}
     local cnnmo_mt = {}        
     
@@ -90,3 +90,5 @@ function libxml.dom.createNamedNodeMapObj()
     setmetatable(self, cnnmo_mt)
     return self
 end
+
+return NamedNodeMap
