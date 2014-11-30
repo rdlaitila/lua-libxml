@@ -26,15 +26,15 @@ property : dom { require('libxml_dom_init') ; get='public' ; set='nobody' }
 -- Loads an XML document
 --
 function public:load(XML_FILE)
-    local parser = self.dom.createDomParser()
+    local parser = self.dom.DOMParser()
     
     if love ~= nil then
-        return parser.parseFromString( love.filesystem.read(XML_FILE, all) )
+        return parser:parseFromString( love.filesystem.read(XML_FILE, all) )
     else
         local f = io.open(XML_FILE, "rb")
         local content = f:read("*all")
         f:close()
-        return parser.parseFromString( content )
+        return parser:parseFromString( content )
     end
 end
 

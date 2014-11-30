@@ -1,4 +1,5 @@
 local upperclass    = require('libxml_lib_upperclass')
+local utils         = require('libxml_utils_init')
 local Document      = require('libxml_dom_document')
 
 -- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -38,38 +39,38 @@ private.lastNodeReference = nil
 --
 -- Class Constructor
 --
-function private:__construct()    
+function private:__construct()  
+    print(self.textNodeCharBuffer)
 end
 
 --
 -- ParseFromString
 --
 function public:parseFromString(XML_STRING)
-    local index = 1
-    
-    local char = function(charIndex) return  self.srcText:sub(charIndex,charIndex) end    
+    local charindex = 1
     
     self.srcText = string.gsub(XML_STRING, "[\t]", "")
     
     --self.srcText = string.gsub(pSrcText, "[\r\n]", "")        
     
-    while index <= self.srcText:len() do            
-        if char(index) == "<" then                
-            if textNodeCharBuffer ~= nil then                    
-                self.openNode(index, "text")                                 
-            elseif char(index + 1) == "/" then                    
-                index = self.closeNode(index)                
-            elseif self.srcText:sub(index+1, index+3) == "!--" then                    
-                index = self.openNode(index, "comment")
-            elseif self.srcText:sub(index+1, index+8) == "![CDATA[" then                    
-                index = self.openNode(index, "CDATASection")                    
+    while charindex <= self.srcText:len() do   
+        print(charindex)
+        if self:char(charindex) == "<" then                
+            if self.textNodeCharBuffer ~= nil then                    
+                self:openNode(charindex, "text")                                 
+            elseif self:char(charindex + 1) == "/" then                    
+                charindex = self:closeNode(charindex)                
+            elseif self.srcText:sub(charindex+1, charindex+3) == "!--" then                    
+                charindex = self:openNode(charindex, "comment")
+            elseif self.srcText:sub(charindex+1, charindex+8) == "![CDATA[" then                    
+                charindex = self:openNode(charindex, "CDATASection")                    
             else                    
-                index = self.openNode(index, "tag")
+                charindex = self:openNode(charindex, "tag")
             end
         else                
-            if textNodeCharBuffer == nil then textNodeCharBuffer = "" end
-            textNodeCharBuffer = textNodeCharBuffer .. char(index)                
-            index = index +1
+            if self.textNodeCharBuffer == nil then self.textNodeCharBuffer = "" end
+            self.textNodeCharBuffer = self.textNodeCharBuffer .. self:char(charindex)                
+            charindex = charindex +1
         end            
     end                
         
@@ -81,41 +82,37 @@ end
 --
 function private:openNode(NODE_INDEX, NODE_TYPE)
     local nI = nil --nodeIndex
-    local rI = pIndex --returnIndex        
+    local rI = NODE_INDEX --returnIndex        
     -----------------------------------------------------------------
-    if pType == "tag" then            
-        local tagContent = string.match(self.srcText, "<(.-)>", pIndex)
+    if NODE_TYPE == "tag" then            
+        local tagContent = string.match(self.srcText, "<(.-)>", NODE_INDEX)
         local tagName = libxml.trim(string.match(tagContent, "([%a%d]+)%s?", 1))            
             
-        table.insert(self.openNodes, libxml.dom.createElement(tagName))            
-        nI = #self.openNodes
+        table.insert(self.openNodes, libxml.dom.createElement(tagName))                    
             
         -- get attributes from tagContent            
         for matchedAttr in string.gmatch(string.sub(tagContent,tagName:len()+1), "(.-=\".-\")") do            
             for attr, value in string.gmatch(matchedAttr, "(.-)=\"(.-)\"") do
-                self.openNodes[nI].setAttribute(libxml.trim(attr), libxml.trim(value))                    
+                self.openNodes[#self.openNodes].setAttribute(libxml.trim(attr), libxml.trim(value))                    
             end                
         end
             
         -- append new node to document
-        if nI == 1 then                
-            self.lastNodeReference = self.document.appendChild(self.openNodes[nI])                    
+        if #self.openNodes == 1 then                
+            self.lastNodeReference = self.document.appendChild(self.openNodes[#self.openNodes])                    
         else                
-            self.lastNodeReference = self.lastNodeReference.appendChild(self.openNodes[nI])                
+            self.lastNodeReference = self.lastNodeReference.appendChild(self.openNodes[#self.openNodes])                
         end            
             
         -- check to see if the tag is self closing, else check against self.selfCloseElements            
         if string.match(tagContent, "/$") then                
-            self.openNodes[nI].isSelfClosing = true
-            self.closeNode(pIndex)
-            nI = #self.openNodes
+            self.openNodes[#self.openNodes].isSelfClosing = true
+            self.closeNode(NODE_INDEX)            
         end
-          
-        rI = rI + string.match(self.srcText, "(<.->)", pIndex):len()
         
-        return rI            
+        return NODE_INDEX + string.match(self.srcText, "(<.->)", NODE_INDEX):len()
     -----------------------------------------------------------------
-    elseif pType == "comment" then
+    elseif NODE_TYPE == "comment" then
         local commentText = string.match(self.srcText, "<!%-%-(.-)%-%->", pIndex)                        
           
         -- Check for lastNodeReference being nil
@@ -128,14 +125,14 @@ function private:openNode(NODE_INDEX, NODE_TYPE)
         rI = pIndex + string.match(self.srcText, "(<!%-%-.-%-%->)", pIndex):len()
         return rI
     -----------------------------------------------------------------
-    elseif pType == "text" then
+    elseif NODE_TYPE == "text" then
         local text = libxml.trim(textNodeCharBuffer)
         if text ~= "" then
             self.lastNodeReference.appendChild(libxml.dom.createText(text))            
         end        
         textNodeCharBuffer = nil            
     -----------------------------------------------------------------
-    elseif pType == "CDATASection" then
+    elseif NODE_TYPE == "CDATASection" then
         local cdataText = string.match(self.srcText, "<!%[CDATA%[(.-)%]%]>", pIndex)            
         local newNode = libxml.dom.createCharacterData(cdataText)                                                
         self.lastNodeReference.appendChild(newNode)            
@@ -155,6 +152,13 @@ function private:closeNode(NODE_INDEX)
         self.lastNodeReference = self.lastNodeReference.parentNode
     end            
     return pIndex + string.match(self.srcText, "(<.->)", pIndex):len()
+end
+
+--
+-- Char
+--
+function private:char(INDEX)
+    return self.srcText:sub(INDEX, INDEX)
 end
 
 --

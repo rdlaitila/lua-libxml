@@ -1,11 +1,5 @@
 libxml = require('libxml.init')
 
-local node = libxml.dom.Node(1)
-
-print(node.blah)
-
-os.exit(0)
-
 -- Check if we are testing love2d or standard lua
 if love ~= nil then
     function love.load()
@@ -14,6 +8,6 @@ if love ~= nil then
        print(name)
     end
 else
-    xmldoc = libxml.load("tests//player.xml")
-    print(xmldoc.documentElement.childNodes[1].getAttribute("name"))
+    xmldoc = libxml:load("tests//player.xml")
+    print(xmldoc.documentElement.childNodes[1]:getAttribute("name"))
 end
