@@ -1,6 +1,10 @@
-local upperclass    = require('libxml_lib_upperclass')
-local Node          = require('libxml_dom_node')
-local Element       = require('libxml_dom_element')
+-- Obtain our path to our lib
+local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
+
+-- Load dependencies
+local upperclass    = require(RP..'lib.upperclass')
+local Node          = require(RP..'dom.node')
+local Element       = require(RP..'dom.element')
 --local Attribute     = require('libxml_dom_attribute')
 --local Comment       = require('libxml_dom_comment')
 --local CDATASection  = require('libxml_dom_cdata')

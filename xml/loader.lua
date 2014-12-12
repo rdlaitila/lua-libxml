@@ -1,12 +1,8 @@
--- Modify our package.path for requires
-local require_path = (...):match("(.-)[^%.]+$"):gsub("%.", "/")
-package.path = package.path .. ";" .. require_path .. "?.lua"
-package.path = package.path .. ";" .. require_path .. "dom/?.lua"
-package.path = package.path .. ";" .. require_path .. "lib/?.lua"
-package.path = package.path .. ";" .. require_path .. "utils/?.lua"
+-- Obtain our path to our lib
+local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
 
 -- Load dependencies
-local upperclass = require('libxml_lib_upperclass')
+local upperclass = require(RP..'lib.upperclass')
 
 -- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -15,12 +11,15 @@ local libxml = upperclass:define("libxml")
 --
 -- Holds our utils class
 --
-property : utils { require('libxml_utils_init') ; get='public' ; set='nobody' }
+property : utils { require(RP.."lib.utils") ; get='public' ; set='nobody' }
 
 --
 -- Holds our dom class
 --
-property : dom { require('libxml_dom_init') ; get='public' ; set='nobody' }
+property : dom { {
+    Node        = require(RP..'dom.node'),
+    DOMParser   = require(RP..'dom.domparser')
+} ; get='public' ; set='nobody' }
 
 --
 -- Loads an XML document

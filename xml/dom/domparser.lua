@@ -1,6 +1,10 @@
-local upperclass    = require('libxml_lib_upperclass')
-local utils         = require('libxml_utils_init')
-local Document      = require('libxml_dom_document')
+-- Obtain our path to our lib
+local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
+
+-- Load dependencies
+local upperclass    = require(RP..'lib.upperclass')
+local utils         = require(RP..'lib.utils')
+local Document      = require(RP..'dom.document')
 
 -- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
