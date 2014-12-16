@@ -1,13 +1,18 @@
+--
 -- Obtain our path to our lib
+--
 local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
 
+--
 -- Load dependencies
+--
 local upperclass    = require(RP..'lib.upperclass')
 local NamedNodeMap  = require(RP..'dom.namednodemap')
 local NodeList      = require(RP..'dom.nodelist')
 
--- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
+--
+-- Define class
+--
 local Node = upperclass:define('Node')
 
 --

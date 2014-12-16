@@ -1,13 +1,19 @@
+--
 -- Obtain our path to our lib
+--
 local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
 
+--
 -- Load dependencies
+--
 local upperclass    = require(RP..'lib.upperclass')
 local utils         = require(RP..'lib.utils')
 local Document      = require(RP..'dom.document')
+local Text          = require(RP..'dom.text')
 
--- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
+--
+-- Define class
+--
 local DOMParser = upperclass:define('DOMParser')
 
 --
@@ -18,7 +24,7 @@ public.parsedebug = false
 --
 -- Source Text
 --
-private.srcText = nil
+private.srcText = ""
 
 --
 -- Open Nodes
@@ -28,7 +34,7 @@ private.openNodes = {}
 --
 -- Text Node Character Buffer
 --
-private.textNodeCharBuffer = nil
+private.textNodeCharBuffer = ""
 
 --
 -- DOM Document
@@ -38,7 +44,7 @@ private.document = Document()
 --
 -- Last Node Reference
 --
-private.lastNodeReference = nil
+private.lastNodeReference = {}
 
 --
 -- Class Constructor
@@ -123,18 +129,18 @@ function private:openNode(NODE_INDEX, NODE_TYPE)
         -- if lastNodeReference is nil, we may be encountering 
         -- a top-level comment, which we will have to drop
         if self.lastNodeReference ~= nil then
-            local newTextNode = self.lastNodeReference.appendChild(libxml.dom.createCommentNodeObj(libxml.trim(commentText)))            
+            local newTextNode = self.lastNodeReference.appendChild(libxml.dom.createCommentNodeObj(utils:trim(commentText)))            
         end
         
         rI = pIndex + string.match(self.srcText, "(<!%-%-.-%-%->)", pIndex):len()
         return rI
     -----------------------------------------------------------------
     elseif NODE_TYPE == "text" then
-        local text = libxml.trim(textNodeCharBuffer)
+        local text = utils:trim(textNodeCharBuffer)
         if text ~= "" then
-            self.lastNodeReference.appendChild(libxml.dom.createText(text))            
+            self.lastNodeReference.appendChild(Text(text))            
         end        
-        textNodeCharBuffer = nil            
+        textNodeCharBuffer = ""            
     -----------------------------------------------------------------
     elseif NODE_TYPE == "CDATASection" then
         local cdataText = string.match(self.srcText, "<!%[CDATA%[(.-)%]%]>", pIndex)            

@@ -1,10 +1,5 @@
-DOMDocument = require('xml.dom.document')
+libxml = require('xml.loader')
 
-for key, value in pairs(package.loaded) do
-    print(key, value)
-end
-
-os.exit(1)
 -- Check if we are testing love2d or standard lua
 if love ~= nil then
     function love.load()

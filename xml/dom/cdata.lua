@@ -1,3 +1,38 @@
+--
+-- Obtain our path to our lib
+--
+local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
+
+--
+-- Load dependencies
+--
+local upperclass    = require(RP..'lib.upperclass')
+local Node          = require(RP..'dom.node')
+
+--
+-- Define class
+--
+local CharacterData = upperclass:define("CharacterData", Node)
+
+--
+-- NodeName
+--
+property : nodeName { "#CDATASECTION" ; get='public' ; set='private' }
+
+--
+-- NodeValue
+--
+public.nodeValue = ""
+
+--
+-- Class Constructor
+--
+function private:__construct(DATA)
+    self:__constructparent(4)
+    
+    self.nodeValue = DATA
+end
+
 function libxml.dom.createCharacterData(pData)
     --INHERIT FROM DOM NODE
     local self = libxml.dom.createNode(4)
