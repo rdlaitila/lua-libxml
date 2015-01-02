@@ -17,9 +17,12 @@ local Node = upperclass:define('Node')
 
 --
 -- Nodetype
--- set on __construct()
 --
-property : nodeType { nil ; get='public' ; set='private'}
+property : nodeType { 
+    nil; 
+    get='public'; 
+    set='private'
+}
 
 --
 -- nodeDesc

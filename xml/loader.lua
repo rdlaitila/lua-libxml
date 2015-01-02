@@ -17,15 +17,23 @@ local libxml = upperclass:define("libxml")
 --
 -- Holds our utils class
 --
-property : utils { require(RP.."lib.utils") ; get='public' ; set='nobody' }
+property : utils { 
+    require(RP.."lib.utils"); 
+    get='public'; 
+    set='nobody' 
+}
 
 --
 -- Holds our dom class
 --
-property : dom { {
-    Node        = require(RP..'dom.node'),
-    DOMParser   = require(RP..'dom.domparser')
-} ; get='public' ; set='nobody' }
+property : dom { 
+    {
+        Node        = require(RP..'dom.node'),
+        DOMParser   = require(RP..'dom.domparser')
+    }; 
+    get='public'; 
+    set='nobody' 
+}
 
 --
 -- Loads an XML document
@@ -108,6 +116,6 @@ function public:save(XML_DOM, FILE_PATH)
 end
 
 -- 
--- Return class
+-- Compile Class
 --
-return upperclass:compile(libxml, {ALLOW_INSTANCE = false, ALLOW_STATIC = true, STRICT_TYPES = true})
+return upperclass:compile(libxml)

@@ -10,6 +10,7 @@ local upperclass    = require(RP..'lib.upperclass')
 local utils         = require(RP..'lib.utils')
 local Document      = require(RP..'dom.document')
 local Text          = require(RP..'dom.text')
+local Element       = require(RP..'dom.element')
 
 --
 -- Define class
@@ -98,12 +99,12 @@ function private:openNode(NODE_INDEX, NODE_TYPE)
         local tagContent = string.match(self.srcText, "<(.-)>", NODE_INDEX)
         local tagName = libxml.trim(string.match(tagContent, "([%a%d]+)%s?", 1))            
             
-        table.insert(self.openNodes, libxml.dom.createElement(tagName))                    
+        table.insert(self.openNodes, Element(tagName))                    
             
         -- get attributes from tagContent            
         for matchedAttr in string.gmatch(string.sub(tagContent,tagName:len()+1), "(.-=\".-\")") do            
             for attr, value in string.gmatch(matchedAttr, "(.-)=\"(.-)\"") do
-                self.openNodes[#self.openNodes].setAttribute(libxml.trim(attr), libxml.trim(value))                    
+                self.openNodes[#self.openNodes]:setAttribute(util:trim(attr), util:trim(value))                    
             end                
         end
             

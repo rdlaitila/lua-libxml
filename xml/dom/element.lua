@@ -36,4 +36,4 @@ end
 --
 -- Compile Class
 --
-return upperclass:compile(Element, {ALLOW_INSTANCE = true, ALLOW_STATIC = false, STRICT_TYPES = true})
+return upperclass:compile(Element)

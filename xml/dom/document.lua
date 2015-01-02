@@ -64,4 +64,4 @@ end
 --
 -- Compile Class
 --
-return upperclass:compile(Document, {ALLOW_INSTANCE = true, ALLOW_STATIC = false, STRICT_TYPES = true})
+return upperclass:compile(Document)
