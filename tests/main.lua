@@ -1,4 +1,6 @@
-libxml = require('xml.loader')
+libxml = require('xml.init')
+
+libxml.dom.Node()
 
 -- Check if we are testing love2d or standard lua
 if love ~= nil then

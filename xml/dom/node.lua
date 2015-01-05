@@ -1,14 +1,7 @@
---
--- Obtain our path to our lib
---
-local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
-
---
--- Load dependencies
---
-local upperclass    = require(RP..'lib.upperclass')
-local NamedNodeMap  = require(RP..'dom.namednodemap')
-local NodeList      = require(RP..'dom.nodelist')
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
+local NamedNodeMap  = require(LIBXML_REQUIRE_PATH..'dom.namednodemap')
+local NodeList      = require(LIBXML_REQUIRE_PATH..'dom.nodelist')
 
 --
 -- Define class
@@ -16,193 +9,294 @@ local NodeList      = require(RP..'dom.nodelist')
 local Node = upperclass:define('Node')
 
 --
--- Nodetype
+-- A NamedNodeMap containing the attributes of this node
+--
+property : attributes { 
+    NamedNodeMap(); 
+    get='public'; 
+    set='private' 
+}
+
+--
+-- Returns the absolute base URI of a node
+--
+property : baseURI {
+    "";
+    get='public';
+    set='private'
+}
+
+--
+-- Returns a NodeList of child nodes for a node
+--
+property : childNodes { 
+    NodeList(); 
+    get='public'; 
+    set='private' 
+}
+
+--
+-- Returns the first child of a node
+--
+property : firstChild { 
+    nil; 
+    get='public'; 
+    set='private';
+    type='any'
+}
+
+--
+-- Returns the last child of a node
+--
+property : lastChild { 
+    nil; 
+    get='public'; 
+    set='private';
+    type='any'
+}
+
+--
+-- Returns the local part of the name of a node
+--
+property : localName {
+    "";
+    get='public';
+    set='private'
+}
+
+--
+-- Returns the namespace URI of a node
+--
+property : namespaceURI {
+    "";
+    get='public';
+    set='private';
+}
+
+--
+-- Returns the node immediately following a node
+--
+property : nextSibling {
+    nil;
+    get='public';
+    set='private';
+    type='any'
+}
+
+--
+-- Returns the name of a node, depending on its type
+--
+property : nodeName { 
+    ""; 
+    get='public'; 
+    set='private' 
+}
+
+--
+-- Returns the type of a node
 --
 property : nodeType { 
-    nil; 
+    0; 
     get='public'; 
     set='private'
 }
 
 --
--- nodeDesc
--- set on __construct()
+-- Sets or returns the value of a node, depending on its type
 --
-property : nodeDesc { nil ; get='public' ; set='private' }
+property : nodeValue {
+    nil;
+    get='public';
+    set='public';
+    type='any'
+}
 
 --
--- Attributes
+-- Returns the root element (document object) for a node
 --
-property : attributes { NamedNodeMap() ; get='public' ; set='private' }
+property : ownerDocument {
+    nil;
+    get='public';
+    set='private';
+    type='any'
+}
 
 --
--- ChildNodes
+-- Returns the parent node of a node
 --
-property : childNodes { NodeList() ; get='public' ; set='private' }
+property : parentNode { 
+    nil; 
+    get='public'; 
+    set='public';
+    type='any'
+}
 
 --
--- ParentNode
+-- Sets or returns the namespace prefix of a node
 --
-property : parentNode { nil ; get='public' ; set='public' }
+property : prefix {
+    nil;
+    get='public';
+    set='public';
+    type='any'
+}
 
 --
--- Id
+-- Returns the node immediately before a node
 --
-property : id { nil ; get='public' ; set='public' }
+property : previousSibling {
+    nil;
+    get='public';
+    set='private';
+    type='any';
+}
 
 --
--- Firstchild
+-- Sets or returns the textual content of a node and its descendants
 --
-property : firstChild { nil ; get='public' ; set='private' }
-
---
--- LastChild
---
-property : lastChild { nil ; get='public' ; set='private' }
+property : textContent {
+    nil;
+    get='public';
+    set='public';
+    type='any';
+}
 
 --
 -- Class Construct
 --
-function private:__construct(NODE_TYPE, NODE_DESCRIPTION)
-    self.nodeType = NODE_TYPE
-    self.nodeDesc = NODE_DESCRIPTION
+function private:__construct()
+    error("Method Not Yet Implimented")
 end
 
 --
--- Index metamethod
+-- Appends a new child node to the end of the list of children of a node
 --
-function private:__index(KEY, MEMBER_LOOKUP)
-    if KEY == "blah" then
-        print("Special COndition")
-    else
-        return MEMBER_LOOKUP.current_value
-    end
+function public:appendChild()
+    error("Method Not Yet Implimented")
 end
 
 --
--- Newindex metamethod
+-- Clones a node
 --
-function private:__newindex(TABLE, KEY, VALUE, MEMBER_LOOKUP)
+function public:cloneNode()
+    error("Method Not Yet Implimented")
 end
 
 --
--- Appendchild
+-- Compares the placement of two nodes in the DOM hierarchy (document)
 --
-function public:appendChild(DOM_NODE)
-    local newNode = self.childNodes:addItem(DOM_NODE)
-    newNode.parentNode = self
-    return newNode
+function public:compareDocumentPosition()
+    error("Method Not Yet Implimented")
 end
 
 --
--- RemoveChild
+-- Returns a DOM object which implements the specialized APIs of the specified feature and version
 --
-function public:removeChild(DOM_NODE)
-    local removedNode = self.childNodes.removeItem(DOM_NODE)
-    
-    return removedNode
+function public:getFeature()
+    error("Method Not Yet Implimented")
 end
 
 --
--- SetAttribute
+-- Returns the object associated to a key on a this node. The object must first have been set to this node by calling setUserData with the same key
 --
-function public:setAttribute(ATTR_NAME, ATTR_VALUE)
-    local attribute = Attribute(ATTR_NAME, ATTR_VALUE)        
-    self.attributes:setNamedItem(attribute)
+function public:getUserData()
+    error("Method Not Yet Implimented")
 end
 
 --
--- RemoveAttribute
---
-function public:removeAttribute(ATTR_NAME)
-    local attribute = self.attributes.removeNamedItem(self.attributes.getNamedItem(pAttributeName).nodeName)
-        
-    libxml.dom.hasChanged = true
-    return attribute        
-end
-    
---
--- GetAttribute
---
-function public:getAttribute(ATTR_NAME)
-    if self.attributes ~= nil then
-        local attribute = self.attributes.getNamedItem(pAttributeName)        
-        if attribute == nil then
-            return nil
-        else
-            return attribute.nodeValue
-        end
-    else
-        return nil
-    end
-end
-    
---
--- HasChildNodes
---
-function public:hasChildNodes()
-    if self.childNodes ~= nil and self.childNodes.length >= 1 then
-        return true
-    else
-        return false
-    end
-end
-    
---
--- HasAttributes
+-- Returns true if the specified node has any attributes, otherwise false
 --
 function public:hasAttributes()
-    if self.attributes ~= nil and self.attributes.length > 0 then
-        return true
-    else
-        return false
-    end
+    error("Method Not Yet Implimented")
 end
 
 --
--- HasAttribute
+-- Returns true if the specified node has any child nodes, otherwise false
 --
-function public:hasAttribute(ATTR_NAME)
-    local response = self.getAttribute(pAttribute)        
-    if response ~= nil then
-        return true
-    else
-        return false
-    end
+function public:hasChildNodes()
+    error("Method Not Yet Implimented")
 end
 
 --
--- HasClass
+-- Inserts a new child node before an existing child node
 --
-function public:hasClass(CLASS_NAME)
-    local classes = libxml.split( self.getAttribute("class") or "", "%s" )
-    for a=1, #classes do
-        if pClass == classes[a] then
-            return true
-        end
-    end
-    return false
-end
-    
---
--- GetElementById
---
-function public:getElementById(ID)
-    return libxml.dom.getElementById(self, pId)
+function public:insertBefore()
+    error("Method Not Yet Implimented")
 end
 
 --
--- GetElementsByTagName
+-- Returns whether the specified namespaceURI is the default
 --
-function public:getElementsByTagName(TAG_NAME)
-    return libxml.dom.getElementsByTagName(self, pTagName)
-end
-    
---
--- getElementsByClassName
---
-function public:getElementsByClassName(CLASS_NAME)
-    return libxml.dom.getElementsByClassName(self, pClassName)
+function public:isDefaultNamespace()
+    error("Method Not Yet Implimented")
 end
 
-return upperclass:compile(Node, {ALLOW_INSTANCE = true, ALLOW_STATIC = false, STRICT_TYPES = true})
+--
+-- Tests whether two nodes are equal
+--
+function public:isEqualNode()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Tests whether the two nodes are the same node
+--
+function public:isSameNode()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Tests whether the DOM implementation supports a specific feature and that the feature is supported by the specified node
+--
+function public:isSupported()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Returns the namespace URI associated with a given prefix
+--
+function public:lookupNamespaceURI()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Returns the prefix associated with a given namespace URI
+--
+function public:lookupPrefix()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Puts all Text nodes underneath a node (including attribute nodes) into a "normal" form where only structure 
+-- (e.g., elements, comments, processing instructions, CDATA sections, and entity references) separates Text nodes, 
+-- i.e., there are neither adjacent Text nodes nor empty Text nodes
+--
+function public:normalize()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Removes a specified child node from the current node 
+--
+function public:removeChild()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Replaces a child node with a new node
+--
+function public:replaceChild()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Associates an object to a key on a node
+--
+function public:setUserData()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Compile Class
+--
+return upperclass:compile(Node)

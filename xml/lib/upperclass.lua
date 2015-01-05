@@ -145,7 +145,8 @@ function upperclass:define(CLASS_NAME, PARENT)
                 
         -- Create our members based on type and scope
         if type(VALUE) == "string" or type(VALUE) == "number" or 
-           type(VALUE) == "boolean" or type(VALUE) == "table" or VALUE == nil then            
+           type(VALUE) == "boolean" or type(VALUE) == "table" or 
+		   type(VALUE) == "userdata" then            
             if TABLE == rawget(_G, "public") then
                 members[KEY] = {
                     scope_get = UPPERCLASS_SCOPE_PUBLIC,                

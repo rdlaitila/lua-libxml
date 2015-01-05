@@ -1,15 +1,18 @@
---
--- Obtain our path to our lib
---
-local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
-
---
--- Load dependencies
---
-local upperclass    = require(RP..'lib.upperclass')
+local upperclass = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils = require(LIBXML_REQUIRE_PATH..'lib.utils')
 
 --
 -- Define Class
 --
 local NodeType = upperclass:define("NodeType")
 
+--
+-- Constructor
+--
+function private:__construct(NODE_TYPE)
+end
+
+--
+-- Compile Class
+--
+return upperclass:compile(NodeType)
