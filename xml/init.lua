@@ -9,6 +9,7 @@ return {
     
     -- Our DOM Objects
     dom = {
+        Document    = require(LIBXML_REQUIRE_PATH..'dom.document'),
         NodeType    = require(LIBXML_REQUIRE_PATH..'dom.nodetype'),
         Node        = require(LIBXML_REQUIRE_PATH..'dom.node')
         --NodeList       = require(REQUIRE_PATH..'dom.nodelist')

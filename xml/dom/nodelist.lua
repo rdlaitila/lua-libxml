@@ -1,53 +1,44 @@
-local function NodeList()
-    local self = {}
-    local self_mt = {}
-    setmetatable(self, self_mt)
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
+
+--
+-- Define class
+--
+local NodeList = upperclass:define("NodeList")
+
+--
+-- Holds a list of nodes for this NodeList
+--
+private.nodes = {}
+
+--
+-- __index metamethod
+--
+function private:__index(KEY) 
+    if type(KEY) == 'number' then
+        return self:item(KEY)
+    elseif KEY == 'length' then
+        return #self.nodes
+    end
     
-    -- PROPERTIES -------------------------------------------------------    
-    self.nodes         = {}
-    self.length     = #self.nodes
-    self.nodeType     = 13
-    ---------------------------------------------------------------------
-    
-    -- METHODS ----------------------------------------------------------
-    self_mt.__index = function(t, k)
-        if type(k) == "number" then
-            return self.item(k)
-        else
-            return self.nodes
-        end        
-    end    
-    self_mt.__tostring = function(t)
-        return "[object]:NodeList"
-    end
-    ---------------------------------------------------------------------
-    self.item = function(pIndex)
-        return self.nodes[pIndex]
-    end    
-    ---------------------------------------------------------------------
-    self.addItem = function(pNodeObj, pIndex)
-        if pIndex ~= nil and type(pIndex) == "number" then
-            table.insert(self.nodes, pIndex, pNodeObj)
-        else
-            table.insert(self.nodes, pNodeObj)
-        end
-        self.length = self.length + 1
-        return pNodeObj
-    end
-    ---------------------------------------------------------------------
-    self.removeItem = function(pNodeObj)
-        if self.length > 0 then
-            for k, v in ipairs(self.nodes) do
-                if self.nodes[k] == pNodeObj then
-                    local oldNode = self.nodes[k]
-                    table.remove(self.nodes, k)
-                    self.length = self.length - 1
-                    return oldNode
-                end
-            end
-        end
-    end
-    ---------------------------------------------------------------------
-    return self
+    return UPPERCLASS_DEFAULT_BEHAVIOR
 end
-return NodeList
+
+--
+-- Returns the node at the specified index in a node list
+--
+function public:item(INDEX)
+    return self.nodes[INDEX] or nil
+end
+
+--
+-- Adds a node to the node list
+--
+function public:add(NODE)
+    table.insert(self.nodes, NODE)    
+end
+
+--
+-- Compile Class
+--
+return upperclass:compile(NodeList)

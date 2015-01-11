@@ -1,20 +1,20 @@
 local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
 local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
-local NamedNodeMap  = require(LIBXML_REQUIRE_PATH..'dom.namednodemap')
-local NodeList      = require(LIBXML_REQUIRE_PATH..'dom.nodelist')
+local DOMNamedNodeMap  = require(LIBXML_REQUIRE_PATH..'dom.namednodemap')
+local DOMNodeList      = require(LIBXML_REQUIRE_PATH..'dom.nodelist')
 
 --
 -- Define class
 --
-local Node = upperclass:define('Node')
+local Node = upperclass:define('DOMNode')
 
 --
 -- A NamedNodeMap containing the attributes of this node
 --
 property : attributes { 
-    NamedNodeMap(); 
+    DOMNamedNodeMap(); 
     get='public'; 
-    set='private' 
+    set='protected' 
 }
 
 --
@@ -23,16 +23,16 @@ property : attributes {
 property : baseURI {
     "";
     get='public';
-    set='private'
+    set='protected'
 }
 
 --
 -- Returns a NodeList of child nodes for a node
 --
 property : childNodes { 
-    NodeList(); 
+    DOMNodeList(); 
     get='public'; 
-    set='private' 
+    set='protected' 
 }
 
 --
@@ -41,7 +41,7 @@ property : childNodes {
 property : firstChild { 
     nil; 
     get='public'; 
-    set='private';
+    set='protected';
     type='any'
 }
 
@@ -51,7 +51,7 @@ property : firstChild {
 property : lastChild { 
     nil; 
     get='public'; 
-    set='private';
+    set='protected';
     type='any'
 }
 
@@ -61,7 +61,7 @@ property : lastChild {
 property : localName {
     "";
     get='public';
-    set='private'
+    set='protected'
 }
 
 --
@@ -70,7 +70,7 @@ property : localName {
 property : namespaceURI {
     "";
     get='public';
-    set='private';
+    set='protected';
 }
 
 --
@@ -79,7 +79,7 @@ property : namespaceURI {
 property : nextSibling {
     nil;
     get='public';
-    set='private';
+    set='protected';
     type='any'
 }
 
@@ -89,7 +89,7 @@ property : nextSibling {
 property : nodeName { 
     ""; 
     get='public'; 
-    set='private' 
+    set='protected' 
 }
 
 --
@@ -98,7 +98,7 @@ property : nodeName {
 property : nodeType { 
     0; 
     get='public'; 
-    set='private'
+    set='protected'
 }
 
 --
@@ -117,7 +117,7 @@ property : nodeValue {
 property : ownerDocument {
     nil;
     get='public';
-    set='private';
+    set='protected';
     type='any'
 }
 
@@ -147,7 +147,7 @@ property : prefix {
 property : previousSibling {
     nil;
     get='public';
-    set='private';
+    set='protected';
     type='any';
 }
 
@@ -164,15 +164,19 @@ property : textContent {
 --
 -- Class Construct
 --
-function private:__construct()
-    error("Method Not Yet Implimented")
+function private:__construct(NODETYPE) 
+    if type(NODETYPE) == "number" then
+        self.nodeType = NODETYPE
+    else
+        error("NodeType must be a number")
+    end
 end
 
 --
 -- Appends a new child node to the end of the list of children of a node
 --
-function public:appendChild()
-    error("Method Not Yet Implimented")
+function public:appendChild(NODE)
+    self.childNodes:add(NODE)
 end
 
 --
