@@ -1,5 +1,18 @@
 # Node Types
 
+```lua
+local libxml = require('libxml.init')
+
+local document = libxml.dom.Document()
+
+local node = libxml.dom.Node()
+
+local element = libxml.dom.Element("mytag")
+
+print(document.nodeName, node.nodeName, element.nodeName)
+print(document.nodeType, node.nodeType, element.nodeType)
+```
+
 The following table lists the different W3C node types, and which node types they may have as children:
 
 <table class="reference notranslate">
