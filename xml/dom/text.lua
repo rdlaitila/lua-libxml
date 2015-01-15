@@ -1,35 +1,48 @@
---
--- Obtain our path to our lib
---
-local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
-
---
--- Load dependencies
---
-local upperclass    = require(RP..'lib.upperclass')
-local CharacterData = require(RP..'dom.cdata')
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
+local DOMCDATA      = require(LIBXML_REQUIRE_PATH..'dom.cdata')
 
 --
 -- Define class
 --
-local Text = upperclass:define("Text", CharacterData)
+local Text = upperclass:define("DOMText", DOMCDATA)
 
 --
--- Holds the nodeName
+-- Returns true if the text node contains content whitespace, otherwise it returns false
 --
-property : nodeName { "#text" ; get='public' ; set='private' }
+property : isElementContentWhitespace {
+    false;
+    get='public';
+    set='private';
+}
 
 --
--- NodeType
+-- Returns all text of text nodes adjacent to this node, concatenated in document order
 --
-property : nodeType { 3 ; get='public' ; set='private' }
+property : wholeText {
+    nil;
+    get='public';
+    set='private';
+    type='string';
+}
 
 --
--- NodeDescription
+-- Class constructor
 --
-property : nodeDescription { "" ; get='public' ; set='private' }
+function private:__construct(TEXT)
+    self:__constructparent(TEXT)
+    self.nodeType = 3
+    self.nodeName = "#text"
+end
 
--- 
--- Compile Class
 --
-return upperclass:compile(Text, {ALLOW_STATIC = false, ALLOW_INSTANCE = true, STRICT_TYPES = true})
+-- Replaces the text of this node and all adjacent text nodes with the specified text
+--
+function public:replaceWholeText(TEXT)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Compile class
+--
+return upperclass:compile(Text)

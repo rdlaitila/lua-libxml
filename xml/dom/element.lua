@@ -1,39 +1,101 @@
--- Obtain our path to our lib
-local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
-
--- Load dependencies
-local upperclass    = require(RP..'lib.upperclass')
-local Node          = require(RP..'dom.node')
-
--- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-local Element = upperclass:define("Element", Node)
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
+local DOMNode       = require(LIBXML_REQUIRE_PATH..'dom.node')
+local DOMNodeList   = require(LIBXML_REQUIRE_PATH..'dom.nodelist')
+local DOMAttribute  = require(LIBXML_REQUIRE_PATH..'dom.attribute')
 
 --
--- Node Name
+-- Define class
 --
-property : nodeName { nil ; get='public' ; set='private' }
+local Element = upperclass:define("DOMElement", DOMNode)
 
 --
--- Tag Name
+-- Returns the type information associated with the element
 --
-property : tagName { nil ; get='public' ; set='private' }
+property : schemaTypeInfo {
+    nil;
+    get='public';
+    set='private';
+    type='any';
+}
 
 --
--- Is Self Closing
+-- Class constructor
 --
-public.isSelfClosing = false
-
---
--- Class Constructor
---
-function private:__construct(TAG_NAME)
+function private:__construct(TAGNAME)
     self:__constructparent(1)
-    self.nodeName = TAG_NAME:upper()
-    self.tagName = utils:trim(TAG_NAME)    
+    self.nodeName = utils:trim(TAGNAME)
 end
 
 --
--- Compile Class
+-- __index metamethod
+--
+function private:__index(KEY)
+    if KEY == 'tagName' then
+        return self.nodeName
+    end
+    
+    return UPPERCLASS_DEFAULT_BEHAVIOR
+end
+
+--
+-- Returns the value of an attribute
+--
+function public:getAttribute(ATTRIBUTE_NAME)
+    local attrnode = self:getAttributeNode(ATTRIBUTE_NAME)
+    if attrnode ~= nil then
+        return attrnode.value
+    end
+end
+
+--
+-- Returns the value of an attribute (with a namespace)
+--
+function public:getAttributeNS()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Returns an attribute node as an Attribute object
+--
+function public:getAttributeNode(ATTRIBUTE_NAME) 
+    for a=1, self.attributes.length do
+        if self.attributes[a].name == utils:trim(ATTRIBUTE_NAME) then
+            return self.attributes[a]
+        end
+    end
+end
+
+--
+-- Returns an attribute node (with a namespace) as an Attribute object
+--
+function public:getAttributeNodeNS()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Returns a NodeList of matching element nodes, and their children
+--
+function public:getElementsByTagName(TAGNAME)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Adds a new attribute
+--
+function public:setAttribute(ATTRIBUTE_NAME, ATTRIBUTE_VALUE)
+    for a=1, self.attributes.length do
+        if self.attributes[a].name == utils:trim(ATTRIBUTE_NAME) then
+            self.attributes[a].value = ATTRIBUTE_VALUE 
+            return
+        end
+    end
+    
+    local newattribute = DOMAttribute(utils:trim(ATTRIBUTE_NAME), ATTRIBUTE_VALUE)
+    return self.attributes:setNamedItem(newattribute)
+end
+
+--
+-- Compile class
 --
 return upperclass:compile(Element)

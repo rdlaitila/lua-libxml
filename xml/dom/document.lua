@@ -1,6 +1,11 @@
 local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
 local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
 local DOMNode       = require(LIBXML_REQUIRE_PATH..'dom.node')
+local DOMAttribute  = require(LIBXML_REQUIRE_PATH..'dom.attribute')
+local DOMCDATA      = require(LIBXML_REQUIRE_PATH..'dom.cdata')
+local DOMComment    = require(LIBXML_REQUIRE_PATH..'dom.comment')
+local DOMElement    = require(LIBXML_REQUIRE_PATH..'dom.element')
+local DOMText       = require(LIBXML_REQUIRE_PATH..'dom.text')
 
 --
 -- Define class
@@ -32,7 +37,7 @@ property : doctype {
 property : documentElement {
     nil;
     get='public';
-    set='private';
+    set='protected';
     type='any';
 }
 
@@ -120,6 +125,7 @@ property : xmlVersion {
 function private:__construct()    
     self:__constructparent(9)
     self.nodeName = "#document"
+    self.ownerDocument = self
 end
 
 --
@@ -133,7 +139,7 @@ end
 -- Creates an attribute node with the specified name, and returns the new Attr object
 --
 function public:createAttribute(NAME)
-    error("Method Not Yet Implimented")
+    return DOMAttribute(NAME)
 end
 
 --
@@ -146,15 +152,15 @@ end
 --
 -- Creates a CDATA section node
 --
-function public:createCDATASection()
-    error("Method Not Yet Implimented")
+function public:createCDATASection(DATA)
+    return DOMCDATA(DATA)
 end
 
 --
 -- Creates a comment node
 --
-function public:createComment()
-    error("Method Not Yet Implimented")
+function public:createComment(DATA)
+    return DOMComment(DATA)
 end
 
 --
@@ -167,8 +173,8 @@ end
 --
 -- Creates an element node
 --
-function public:createElement()
-    error("Method Not Yet Implimented")
+function public:createElement(TAGNAME)
+    return DOMElement(TAGNAME)
 end
 
 --
@@ -195,29 +201,8 @@ end
 --
 -- Creates a text node
 --
-function public:createTextNode()
-    error("Method Not Yet Implimented")
-end
-
---
--- Returns the element that has an ID attribute with the given value. If no such element exists, it returns null
---
-function public:getElementById(ID)
-    error("Method Not Yet Implimented")
-end
-
---
--- Returns a NodeList of all elements with a specified name
---
-function public:getElementsByTagName()
-    error("Method Not Yet Implimented")
-end
-
---
--- Returns a NodeList of all elements with a specified name and namespace
---
-function public:getElementsByTagNameNS()
-    error("Method Not Yet Implimented")
+function public:createTextNode(TEXT)
+    return DOMText(TEXT)
 end
 
 --

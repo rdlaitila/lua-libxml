@@ -9,7 +9,15 @@ local NodeList = upperclass:define("NodeList")
 --
 -- Holds a list of nodes for this NodeList
 --
-private.nodes = {}
+protected.nodes = nil
+
+--
+-- Class constructor
+--
+function private:__construct()
+    -- generate a new nodes table
+    self.nodes = {}
+end
 
 --
 -- __index metamethod

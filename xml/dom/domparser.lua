@@ -1,16 +1,9 @@
---
--- Obtain our path to our lib
---
-local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
-
---
--- Load dependencies
---
-local upperclass    = require(RP..'lib.upperclass')
-local utils         = require(RP..'lib.utils')
-local Document      = require(RP..'dom.document')
-local Text          = require(RP..'dom.text')
-local Element       = require(RP..'dom.element')
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
+local DOMDocument   = require(LIBXML_REQUIRE_PATH..'dom.document')
+local DOMText       = require(LIBXML_REQUIRE_PATH..'dom.text')
+local DOMElement    = require(LIBXML_REQUIRE_PATH..'dom.element')
+local DOMComment    = require(LIBXML_REQUIRE_PATH..'dom.comment')
 
 --
 -- Define class
@@ -40,34 +33,33 @@ private.textNodeCharBuffer = ""
 --
 -- DOM Document
 --
-private.document = Document()
+private.document = DOMDocument()
 
 --
 -- Last Node Reference
 --
-private.lastNodeReference = {}
+private.lastNodeReference = nil
 
 --
 -- Class Constructor
 --
-function private:__construct()  
-    print(self.textNodeCharBuffer)
+function private:__construct()    
+    self.lastNodeReference = self.document      
 end
 
 --
 -- ParseFromString
 --
-function public:parseFromString(XML_STRING)
+function public:parseFromString(XML_STRING)    
     local charindex = 1
     
     self.srcText = string.gsub(XML_STRING, "[\t]", "")
     
     --self.srcText = string.gsub(pSrcText, "[\r\n]", "")        
     
-    while charindex <= self.srcText:len() do   
-        print(charindex)
+    while charindex <= self.srcText:len() do        
         if self:char(charindex) == "<" then                
-            if self.textNodeCharBuffer ~= nil then                    
+            if self.textNodeCharBuffer:len() > 0 then                    
                 self:openNode(charindex, "text")                                 
             elseif self:char(charindex + 1) == "/" then                    
                 charindex = self:closeNode(charindex)                
@@ -78,8 +70,7 @@ function public:parseFromString(XML_STRING)
             else                    
                 charindex = self:openNode(charindex, "tag")
             end
-        else                
-            if self.textNodeCharBuffer == nil then self.textNodeCharBuffer = "" end
+        else
             self.textNodeCharBuffer = self.textNodeCharBuffer .. self:char(charindex)                
             charindex = charindex +1
         end            
@@ -91,29 +82,21 @@ end
 --
 -- OpenNode
 --
-function private:openNode(NODE_INDEX, NODE_TYPE)
-    local nI = nil --nodeIndex
-    local rI = NODE_INDEX --returnIndex        
-    -----------------------------------------------------------------
+function private:openNode(NODE_INDEX, NODE_TYPE)    
     if NODE_TYPE == "tag" then            
         local tagContent = string.match(self.srcText, "<(.-)>", NODE_INDEX)
-        local tagName = libxml.trim(string.match(tagContent, "([%a%d]+)%s?", 1))            
+        local tagName = utils:trim(string.match(tagContent, "([%a%d]+)%s?", 1))            
             
-        table.insert(self.openNodes, Element(tagName))                    
+        table.insert(self.openNodes, DOMElement(tagName))                    
             
         -- get attributes from tagContent            
         for matchedAttr in string.gmatch(string.sub(tagContent,tagName:len()+1), "(.-=\".-\")") do            
-            for attr, value in string.gmatch(matchedAttr, "(.-)=\"(.-)\"") do
-                self.openNodes[#self.openNodes]:setAttribute(util:trim(attr), util:trim(value))                    
+            for attr, value in string.gmatch(matchedAttr, "(.-)=\"(.-)\"") do                
+                self.openNodes[#self.openNodes]:setAttribute(utils:trim(attr), utils:trim(value))                    
             end                
         end
             
-        -- append new node to document
-        if #self.openNodes == 1 then                
-            self.lastNodeReference = self.document.appendChild(self.openNodes[#self.openNodes])                    
-        else                
-            self.lastNodeReference = self.lastNodeReference.appendChild(self.openNodes[#self.openNodes])                
-        end            
+        self.lastNodeReference = self.lastNodeReference:appendChild(self.openNodes[#self.openNodes])                        
             
         -- check to see if the tag is self closing, else check against self.selfCloseElements            
         if string.match(tagContent, "/$") then                
@@ -121,8 +104,7 @@ function private:openNode(NODE_INDEX, NODE_TYPE)
             self.closeNode(NODE_INDEX)            
         end
         
-        return NODE_INDEX + string.match(self.srcText, "(<.->)", NODE_INDEX):len()
-    -----------------------------------------------------------------
+        return NODE_INDEX + string.match(self.srcText, "(<.->)", NODE_INDEX):len()    
     elseif NODE_TYPE == "comment" then
         local commentText = string.match(self.srcText, "<!%-%-(.-)%-%->", pIndex)                        
           
@@ -130,24 +112,19 @@ function private:openNode(NODE_INDEX, NODE_TYPE)
         -- if lastNodeReference is nil, we may be encountering 
         -- a top-level comment, which we will have to drop
         if self.lastNodeReference ~= nil then
-            local newTextNode = self.lastNodeReference.appendChild(libxml.dom.createCommentNodeObj(utils:trim(commentText)))            
+            local newTextNode = self.lastNodeReference:appendChild(DOMComment(utils:trim(commentText)))            
         end
         
-        rI = pIndex + string.match(self.srcText, "(<!%-%-.-%-%->)", pIndex):len()
-        return rI
-    -----------------------------------------------------------------
+        return NODE_INDEX + string.match(self.srcText, "(<!%-%-.-%-%->)", NODE_INDEX):len()
     elseif NODE_TYPE == "text" then
-        local text = utils:trim(textNodeCharBuffer)
-        if text ~= "" then
-            self.lastNodeReference.appendChild(Text(text))            
-        end        
-        textNodeCharBuffer = ""            
-    -----------------------------------------------------------------
+        local text = utils:trim(self.textNodeCharBuffer)        
+        self.lastNodeReference:appendChild(DOMText(text))                    
+        self.textNodeCharBuffer = ""               
     elseif NODE_TYPE == "CDATASection" then
         local cdataText = string.match(self.srcText, "<!%[CDATA%[(.-)%]%]>", pIndex)            
         local newNode = libxml.dom.createCharacterData(cdataText)                                                
-        self.lastNodeReference.appendChild(newNode)            
-        return pIndex + string.match(self.srcText, "(<!%[CDATA%[.-%]%]>)", pIndex):len()
+        self.lastNodeReference:appendChild(newNode)            
+        return NODE_INDEX + string.match(self.srcText, "(<!%[CDATA%[.-%]%]>)", NODE_INDEX):len()
     end
     -----------------------------------------------------------------
 end
@@ -156,13 +133,12 @@ end
 -- CloseNode
 --
 function private:closeNode(NODE_INDEX)
-    local tagname = libxml.trim(string.match(self.srcText, "/?([%a%d]+)%s?", pIndex))        
-    local nI = #self.openNodes
-    if libxml.trim(self.openNodes[nI].tagName:upper()) == libxml.trim(tagname):upper() then            
+    local tagname = utils:trim(string.match(self.srcText, "/?([%a%d]+)%s?", NODE_INDEX))            
+    if utils:trim(self.openNodes[#self.openNodes].tagName:upper()) == utils:trim(tagname):upper() then            
         table.remove(self.openNodes, #self.openNodes)            
         self.lastNodeReference = self.lastNodeReference.parentNode
     end            
-    return pIndex + string.match(self.srcText, "(<.->)", pIndex):len()
+    return NODE_INDEX + string.match(self.srcText, "(<.->)", NODE_INDEX):len()
 end
 
 --
@@ -175,4 +151,4 @@ end
 --
 -- Compile
 --
-return upperclass:compile(DOMParser, {ALLOW_INSTANCE = true, ALLOW_STATIC = false, STRICT_TYPES = true})
+return upperclass:compile(DOMParser)

@@ -1,47 +1,87 @@
---
--- Obtain our path to our lib
---
-local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
-
---
--- Load dependencies
---
-local upperclass = require(RP..'lib.upperclass')
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
+local DOMNode       = require(LIBXML_REQUIRE_PATH..'dom.node')
 
 --
 -- Define class
 --
-local CharacterData = upperclass:define("CharacterData")
+local Characterdata = upperclass:define("DOMCDATA", DOMNode)
 
 --
--- NodeName
+-- Sets or returns the text of this node
 --
-property : nodeName { 
-    "#CDATASECTION"; 
-    get='public'; 
-    set='private'
+property : data {
+    nil;
+    get='public';
+    set='public';
+    type='string';
 }
 
---
--- NodeValue
---
-public.nodeValue = ""
-
---
--- Class Constructor
+-- 
+-- Class constructor
 --
 function private:__construct(DATA)
-    self.nodeValue = DATA
+    self:__constructparent(4)
+    self.nodeName = "#cdata-section"
+    self.data = DATA        
 end
 
 --
--- Append Data 
+-- __index metamethod
+--
+function private:__index(KEY)
+    if KEY == 'length' then
+        return self.data:len()
+    elseif KEY == 'nodeValue' then
+        return self.data
+    end
+    
+    return UPPERCLASS_DEFAULT_BEHAVIOR
+end
+
+--
+-- Appends data to the node
 --
 function public:appendData(DATA)
-    self.nodeValue = self.nodeValue + DATA
+    error("Method Not Yet Implimented")
 end
 
 --
--- Compile Class
+-- Deletes data from the node
 --
- return upperclass:compile(CharacterData)
+function public:deleteData(DATA)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Inserts data into the node
+--
+function public:insertData(DATA)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Replaces data in the node
+--
+function public:replaceData()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Splits the CDATA node into two nodes
+--
+function public:splitText()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Extracts data from the node
+--
+function public:substringData()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Compile class
+--
+return upperclass:compile(Characterdata)

@@ -1,94 +1,78 @@
-local function NamedNodeMap()
-    local self = {}
-    local cnnmo_mt = {}        
-    
-    --===================================================================
-    -- PROPERTIES                                                       =
-    --===================================================================
-    self.nodes = {}
-    ---------------------------------------------------------------------
-    self.length = #self.nodes
-    ---------------------------------------------------------------------
-    
-    --===================================================================
-    -- OBJECT METATABLE                                                 =
-    --===================================================================
-    cnnmo_mt.__index = function(t, k)        
-        if type(k) == "number" then
-            return self.nodes[k]
-        elseif type(k) == "string" then
-            for i, v in ipairs(self.nodes) do
-                if self.nodes[i].nodeName == k then
-                    return self.nodes[i]
-                end
-            end
-        else
-            return nil
-        end        
-    end
-    ---------------------------------------------------------------------        
-    cnnmo_mt.__tostring = function(t)
-        return "[object]:NamedNodeMap"
-    end
-    ---------------------------------------------------------------------    
-    
-    --====================================================================
-    -- METHODS                                                             =    
-    --====================================================================    
-    self.setNamedItem = function(pNode, pIndex)                
-        if self.length == 0 then            
-            table.insert(self.nodes, pNode)
-            self.length = #self.nodes
-            return pNode
-        elseif self.length > 0 then
-            for i, v in ipairs(self.nodes) do
-                if self.nodes[i].nodeName == pNode.nodeName then
-                    self.nodes[i] = pNode
-                    return pNode
-                else
-                    local oldNode = self.nodes[i]
-                    table.insert(self.nodes, pNode)
-                    self.length = #self.nodes
-                    return oldNode
-                end
-            end
-        end        
-    end
-    ---------------------------------------------------------------------
-    self.getNamedItem = function(pName)        
-        local returnvalue = nil
-        for k, v in ipairs(self.nodes) do            
-            if self.nodes[k].nodeName == pName then                
-                returnvalue = self.nodes[k]
-            end
-        end
-        return returnvalue
-    end
-    ---------------------------------------------------------------------
-    self.removeNamedItem = function(pName)
-        if self.length > 0 then
-            for k, v in ipairs(self.nodes) do
-                if self.nodes[k].nodeName == pName then
-                    local oldNode = self.nodes[k]
-                    table.remove(self.nodes, k)
-                    self.length = self.length - 1
-                    return oldNode
-                end
-            end
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
+local utils         = require(LIBXML_REQUIRE_PATH..'lib.utils')
+local DOMNodeList   = require(LIBXML_REQUIRE_PATH..'dom.nodelist')
+
+--
+-- Define class
+--
+local NamedNodeMap = upperclass:define("DOMNamedNodeMap", DOMNodeList)
+
+--
+-- Returns the node with the specific name
+--
+function public:getNamedItem(NAME)
+    for a=1, self.length do
+        if self.nodes[a].nodeName == NAME then
+            return self.nodes[a]
         end
     end
-    ---------------------------------------------------------------------
-    self.item = function(pIndex)
-        if self.length > 0 then
-            return self.nodes[pIndex]
-        else
-            return nil
-        end
-    end
-    ---------------------------------------------------------------------    
-    
-    setmetatable(self, cnnmo_mt)
-    return self
 end
 
-return NamedNodeMap
+--
+-- Returns the node with the specific name and namespace
+--
+function public:getNamedItemNS(NS, NAME)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Removes the node with the specific name
+--
+function public:removeNamedItem(NAME)
+    local node = nil
+    local nodeindex = nil
+    for a=1, self.length do
+        if self.nodes[a].nodeName == NAME then
+            node = self.nodes[a]
+            nodeindex = a
+        end
+    end
+    table.remove(self.nodes, nodeindex)
+end
+
+--
+-- Removes the node with the specific name and namespace
+--
+function public:removeNamedItemNS(NS, NAME)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Sets the specified node (by name)
+--
+function public:setNamedItem(ATTR_NODE)
+    for a=1, self.length do
+        if self.nodes[a].nodeName == ATTR_NODE.nodeName then
+            local returnnode = self.nodes[a]
+            self.nodes[a] = ATTR_NODE
+            return returnnode
+        end
+    end
+    
+    table.insert(self.nodes, ATTR_NODE)
+end
+
+--
+-- Sets the specified node (by name and namespace)
+--
+function public:setNamedItemNS(NS, NAME, NODE)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Compile class
+--
+return upperclass:compile(NamedNodeMap)
+
+
+

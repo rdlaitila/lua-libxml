@@ -12,9 +12,10 @@ local Node = upperclass:define('DOMNode')
 -- A NamedNodeMap containing the attributes of this node
 --
 property : attributes { 
-    DOMNamedNodeMap(); 
+    nil; 
     get='public'; 
-    set='protected' 
+    set='protected';
+    type='DOMNamedNodeMap';
 }
 
 --
@@ -30,9 +31,10 @@ property : baseURI {
 -- Returns a NodeList of child nodes for a node
 --
 property : childNodes { 
-    DOMNodeList(); 
+    nil; 
     get='public'; 
-    set='protected' 
+    set='protected';
+    type='any';
 }
 
 --
@@ -98,7 +100,7 @@ property : nodeName {
 property : nodeType { 
     0; 
     get='public'; 
-    set='protected'
+    set='protected';
 }
 
 --
@@ -164,19 +166,38 @@ property : textContent {
 --
 -- Class Construct
 --
-function private:__construct(NODETYPE) 
+function private:__construct(NODETYPE)     
     if type(NODETYPE) == "number" then
         self.nodeType = NODETYPE
     else
         error("NodeType must be a number")
     end
+    
+    self.attributes = DOMNamedNodeMap()
+    self.childNodes = DOMNodeList()
 end
 
 --
 -- Appends a new child node to the end of the list of children of a node
 --
-function public:appendChild(NODE)
+function public:appendChild(NODE)    
+    NODE.parentNode = self
+    
+    NODE.ownerDocument = self.ownerDocument
+    
     self.childNodes:add(NODE)
+    
+    self.firstChild = self.childNodes[1]
+    
+    self.lastChild = self.childNodes[self.childNodes.length]
+    
+    -- If this node is a document node (type 9) and the appending node is 
+    -- a element node (type 1) then set documentElement to self
+    if self.nodeType == 9 and NODE.nodeType == 1 then
+        self.documentElement = NODE
+    end
+    
+    return NODE
 end
 
 --
@@ -211,7 +232,11 @@ end
 -- Returns true if the specified node has any attributes, otherwise false
 --
 function public:hasAttributes()
-    error("Method Not Yet Implimented")
+    if self.attributes.length > 0 then
+        return true
+    else
+        return false
+    end    
 end
 
 --
@@ -297,6 +322,27 @@ end
 -- Associates an object to a key on a node
 --
 function public:setUserData()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Returns the element that has an ID attribute with the given value. If no such element exists, it returns null
+--
+function public:getElementById(ID)
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Returns a NodeList of all elements with a specified name
+--
+function public:getElementsByTagName()
+    error("Method Not Yet Implimented")
+end
+
+--
+-- Returns a NodeList of all elements with a specified name and namespace
+--
+function public:getElementsByTagNameNS()
     error("Method Not Yet Implimented")
 end
 

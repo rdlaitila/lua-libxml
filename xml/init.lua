@@ -9,11 +9,19 @@ return {
     
     -- Our DOM Objects
     dom = {
-        Document    = require(LIBXML_REQUIRE_PATH..'dom.document'),
-        NodeType    = require(LIBXML_REQUIRE_PATH..'dom.nodetype'),
-        Node        = require(LIBXML_REQUIRE_PATH..'dom.node')
-        --NodeList       = require(REQUIRE_PATH..'dom.nodelist')
-        --NamedNodeMap   = require(REQUIRE_PATH..'dom.namednodemap')
+        Attribute               = require(LIBXML_REQUIRE_PATH..'dom.attribute'),
+        CDATA                   = require(LIBXML_REQUIRE_PATH..'dom.cdata'),
+        Comment                 = require(LIBXML_REQUIRE_PATH..'dom.comment'),
+        Document                = require(LIBXML_REQUIRE_PATH..'dom.document'),
+        DocumentImplimentation  = require(LIBXML_REQUIRE_PATH..'dom.documentimplimentation'),
+        DocumentType            = require(LIBXML_REQUIRE_PATH..'dom.documenttype'),
+        DOMParser               = require(LIBXML_REQUIRE_PATH..'dom.domparser'),
+        Element                 = require(LIBXML_REQUIRE_PATH..'dom.element'),
+        NamedNodeMap            = require(LIBXML_REQUIRE_PATH..'dom.namednodemap'),
+        Node                    = require(LIBXML_REQUIRE_PATH..'dom.node'),
+        NodeList                = require(LIBXML_REQUIRE_PATH..'dom.nodelist'),
+        ProcessingInstruction   = require(LIBXML_REQUIRE_PATH..'dom.processinginstruction'),
+        Text                    = require(LIBXML_REQUIRE_PATH..'dom.text'),
     };
     
     -- Our Library Objects

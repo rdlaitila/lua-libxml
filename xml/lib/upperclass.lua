@@ -25,7 +25,7 @@ SOFTWARE.
 local upperclass = {}
 
 -- Our version: Major.Minor.Patch
-upperclass.version = "0.1.1"
+upperclass.version = "0.1.3"
 
 --
 -- Define some static scope properties for use internally
@@ -101,8 +101,8 @@ function upperclass:dumpClassMembers(CLASS, SORT_COLUMN)
                 targetClass.__imp__.members[key].member_scope_set,
                 targetClass.__imp__.members[key].member_type,
                 targetClass.__imp__.members[key].value_type,
-                tostring(targetClass.__imp__.members[key].value_default),
-                tostring(targetClass.__inst__.memberValueOverrides[key]),
+                tostring(upperclass:getClassMember(targetClass, key).value_default),
+                tostring(upperclass:getClassMemberValue(targetClass, key)),
                 tostring(targetClass.__imp__.name),
             })
         end
@@ -245,6 +245,39 @@ function upperclass:getClassMembers(CLASS, RECURSE)
     end
 
     return members
+end
+
+--
+-- Atempts to obtain a class member value
+--
+function upperclass:getClassMemberValue(CLASS, KEY, TARGET_MEMBER)    
+    local targetClass = CLASS    
+    
+    -- Attempt to find a memberValueOverride
+    while targetClass ~= nil do
+        if targetClass.__inst__.memberValueOverrides[KEY] ~= nil then
+            return targetClass.__inst__.memberValueOverrides[KEY].value
+        end
+        
+        if targetClass.__parent__ ~= nil then
+            targetClass = targetClass.__parent__
+        elseif targetClass.__parent__ == nil then
+            targetClass = nil
+        end
+    end
+    
+    -- Otherwise locate the member and return its value default
+    local targetMember = nil
+    if TARGET_MEMBER == nil then
+        targetMember = upperclass:getClassMember(CLASS, KEY)
+    else
+        targetMember = TARGET_MEMBER
+    end
+    if targetMember ~= nil then
+        return targetMember.value_default
+    end
+    
+    error("Unable to locate class member value")
 end
 
 --
@@ -660,12 +693,14 @@ function ClassRuntimeMetatable.__index(TABLE, KEY)
         
     -- Return members based on scope
     if debug == nil or targetMember.member_scope_get == UPPERCLASS_SCOPE_PUBLIC then
-        return TABLE.__inst__.memberValueOverrides[KEY] or targetMember.value_default                        
+        --return TABLE.__inst__.memberValueOverrides[KEY] or targetMember.value_default                        
+        return upperclass:getClassMemberValue(TABLE, KEY, targetMember)
     elseif targetMember.member_scope_get == UPPERCLASS_SCOPE_PRIVATE then
         local members = upperclass:getClassMembers(TABLE, false)
         for a=1, #members do                
             if caller == members[a].value_default then                
-                return TABLE.__inst__.memberValueOverrides[KEY] or targetMember.value_default
+                --return TABLE.__inst__.memberValueOverrides[KEY] or targetMember.value_default
+                return upperclass:getClassMemberValue(TABLE, KEY, targetMember)
             end
         end        
         error("Attempt to retrieve private member '"..tostring(KEY).."' from outside of class '"..TABLE.__imp__.name.."' is disallowed")
@@ -673,7 +708,8 @@ function ClassRuntimeMetatable.__index(TABLE, KEY)
         local members = upperclass:getClassMembers(TABLE, true)        
         for a=1, #members do                        
             if caller == members[a].value_default then                  
-                return TABLE.__inst__.memberValueOverrides[KEY] or targetMember.value_default
+                --return TABLE.__inst__.memberValueOverrides[KEY] or targetMember.value_default
+                return upperclass:getClassMemberValue(TABLE, KEY, targetMember)
             end
         end          
         error("Attempt to retrieve protected member '"..tostring(KEY).."' from outside of class '"..TABLE.__imp__.name.."' is disallowed")
@@ -773,7 +809,7 @@ function ClassRuntimeMetatable.__newindex(TABLE, KEY, VALUE)
     
     -- Conduct edit
     if editPermitted == true then
-        TABLE.__inst__.memberValueOverrides[KEY] = VALUE    
+        TABLE.__inst__.memberValueOverrides[KEY] = {value=VALUE}
     end
 end
 

@@ -1,5 +1,12 @@
 libxml = require('xml.init')
 
-local Document = libxml.dom.Document()
 
-libxml.lib.upperclass:dumpClassMembers(Document, 8)
+local domParser = libxml.dom.DOMParser()
+local document = domParser:parseFromString([[
+    <!-- some comment -->
+    <node attr="whatever">
+        <childnode></childnode>
+    </node>
+]])
+
+print(document.documentElement:getAttributeNode("attr").value)
