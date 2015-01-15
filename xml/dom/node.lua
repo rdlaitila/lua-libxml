@@ -15,7 +15,7 @@ property : attributes {
     nil; 
     get='public'; 
     set='protected';
-    type='DOMNamedNodeMap';
+    type='any';
 }
 
 --
