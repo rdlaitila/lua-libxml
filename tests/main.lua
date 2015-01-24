@@ -1,12 +1,10 @@
+local loadlibstarttime = os.clock()
 libxml = require('xml.init')
+local loadlibendtime = os.clock()
 
+print("Total libxml require time: ", loadlibendtime - loadlibstarttime)
 
-local domParser = libxml.dom.DOMParser()
-local document = domParser:parseFromString([[
-    <!-- some comment -->
-    <node attr="whatever">
-        <childnode></childnode>
-    </node>
-]])
-
-print(document.documentElement:getAttributeNode("attr").value)
+local elements = {}
+for a=1, 10000 do
+    table.insert(elements, libxml.dom.Element("div"))
+end

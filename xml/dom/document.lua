@@ -96,7 +96,7 @@ property : strictErrorChecking {
 property : xmlEncoding {
     nil;
     get='public';
-    set='private';
+    set='public';
     type='string';
 }
 
@@ -104,9 +104,10 @@ property : xmlEncoding {
 -- Sets or returns whether the document is standalone
 --
 property : xmlStandalone {
-    false;
+    nil;
     get='public';
     set='public';
+    type='string'
 }
 
 --

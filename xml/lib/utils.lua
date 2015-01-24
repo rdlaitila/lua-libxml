@@ -1,11 +1,8 @@
--- Obtain our path to our lib
-local RP="";for w in (...):gmatch("(.-)%.") do if w=="xml" then RP=RP.."xml"..".";break else RP=RP..w.."." end end
+local upperclass    = require(LIBXML_REQUIRE_PATH..'lib.upperclass')
 
--- Load dependencies
-local upperclass = require(RP..'lib.upperclass')
-
--- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
+--
+-- Define Class
+--
 local utils = upperclass:define("utils")
 
 --
@@ -82,4 +79,4 @@ end
 --
 -- Return class
 --
-return upperclass:compile(utils, {ALLOW_INSTANCE = false, ALLOW_STATIC = true, STRICT_TYPES = true})
+return upperclass:compile(utils)

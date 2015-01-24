@@ -23,7 +23,7 @@ private.srcText = ""
 --
 -- Open Nodes
 --
-private.openNodes = {}
+private.openNodes = nil
 
 --
 -- Text Node Character Buffer
@@ -33,7 +33,7 @@ private.textNodeCharBuffer = ""
 --
 -- DOM Document
 --
-private.document = DOMDocument()
+private.document = nil
 
 --
 -- Last Node Reference
@@ -43,8 +43,10 @@ private.lastNodeReference = nil
 --
 -- Class Constructor
 --
-function private:__construct()    
-    self.lastNodeReference = self.document      
+function private:__construct()        
+    self.document = DOMDocument()
+    self.lastNodeReference = self.document    
+    self.openNodes = {}
 end
 
 --
@@ -67,6 +69,8 @@ function public:parseFromString(XML_STRING)
                 charindex = self:openNode(charindex, "comment")
             elseif self.srcText:sub(charindex+1, charindex+8) == "![CDATA[" then                    
                 charindex = self:openNode(charindex, "CDATASection")                    
+            elseif self.srcText:sub(charindex+1, charindex+4) == "?xml" then
+                charindex = self:openNode(charindex, "XMLDeclaration")
             else                    
                 charindex = self:openNode(charindex, "tag")
             end
@@ -101,23 +105,16 @@ function private:openNode(NODE_INDEX, NODE_TYPE)
         -- check to see if the tag is self closing, else check against self.selfCloseElements            
         if string.match(tagContent, "/$") then                
             self.openNodes[#self.openNodes].isSelfClosing = true
-            self.closeNode(NODE_INDEX)            
+            self:closeNode(NODE_INDEX)            
         end
         
         return NODE_INDEX + string.match(self.srcText, "(<.->)", NODE_INDEX):len()    
     elseif NODE_TYPE == "comment" then
-        local commentText = string.match(self.srcText, "<!%-%-(.-)%-%->", pIndex)                        
-          
-        -- Check for lastNodeReference being nil
-        -- if lastNodeReference is nil, we may be encountering 
-        -- a top-level comment, which we will have to drop
-        if self.lastNodeReference ~= nil then
-            local newTextNode = self.lastNodeReference:appendChild(DOMComment(utils:trim(commentText)))            
-        end
+        local commentText = string.match(self.srcText, "<!%-%-(.-)%-%->", NODE_INDEX)                        
         
         return NODE_INDEX + string.match(self.srcText, "(<!%-%-.-%-%->)", NODE_INDEX):len()
     elseif NODE_TYPE == "text" then
-        local text = utils:trim(self.textNodeCharBuffer)        
+        local text = utils:trim(self.textNodeCharBuffer)                
         self.lastNodeReference:appendChild(DOMText(text))                    
         self.textNodeCharBuffer = ""               
     elseif NODE_TYPE == "CDATASection" then
@@ -125,8 +122,24 @@ function private:openNode(NODE_INDEX, NODE_TYPE)
         local newNode = libxml.dom.createCharacterData(cdataText)                                                
         self.lastNodeReference:appendChild(newNode)            
         return NODE_INDEX + string.match(self.srcText, "(<!%[CDATA%[.-%]%]>)", NODE_INDEX):len()
-    end
-    -----------------------------------------------------------------
+    elseif NODE_TYPE == "XMLDeclaration" then
+        local declarationContent = string.match(self.srcText, "<?xml(.-)?>", NODE_INDEX)
+        
+        -- get attributes from tagContent            
+        for matchedAttr in string.gmatch(declarationContent, "(.-=\".-\")") do            
+            for attr, value in string.gmatch(matchedAttr, "(.-)=\"(.-)\"") do                            
+                if utils:trim(attr:lower()) == "version" then
+                    self.document.xmlVersion = value
+                elseif utils:trim(attr:lower()) == "encoding" then
+                    self.document.xmlEncoding = value
+                elseif utils:trim(attr:lower()) == "standalone" then
+                    self.document.xmlStandalone = value
+                end
+            end                
+        end
+        
+        return string.match(self.srcText, "<?xml(.-)?>", NODE_INDEX):len()
+    end    
 end
 
 --

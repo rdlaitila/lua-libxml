@@ -10,6 +10,16 @@ local DOMAttribute  = require(LIBXML_REQUIRE_PATH..'dom.attribute')
 local Element = upperclass:define("DOMElement", DOMNode)
 
 --
+-- Is this element a self closing tag
+--
+property : isSelfClosing {
+    false;
+    get='public';
+    set='public';
+    type='boolean';
+}
+
+--
 -- Returns the type information associated with the element
 --
 property : schemaTypeInfo {
@@ -24,7 +34,7 @@ property : schemaTypeInfo {
 --
 function private:__construct(TAGNAME)
     self:__constructparent(1)
-    self.nodeName = utils:trim(TAGNAME)
+    self.nodeName = utils:trim(TAGNAME)    
 end
 
 --
@@ -70,13 +80,6 @@ end
 -- Returns an attribute node (with a namespace) as an Attribute object
 --
 function public:getAttributeNodeNS()
-    error("Method Not Yet Implimented")
-end
-
---
--- Returns a NodeList of matching element nodes, and their children
---
-function public:getElementsByTagName(TAGNAME)
     error("Method Not Yet Implimented")
 end
 

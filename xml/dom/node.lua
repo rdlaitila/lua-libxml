@@ -15,7 +15,7 @@ property : attributes {
     nil; 
     get='public'; 
     set='protected';
-    type='any';
+    type=DOMNamedNodeMap
 }
 
 --
@@ -34,7 +34,7 @@ property : childNodes {
     nil; 
     get='public'; 
     set='protected';
-    type='any';
+    type=DOMNodeList
 }
 
 --
@@ -44,7 +44,7 @@ property : firstChild {
     nil; 
     get='public'; 
     set='protected';
-    type='any'
+    type={DOMNode, DOMElement, }
 }
 
 --
@@ -89,9 +89,10 @@ property : nextSibling {
 -- Returns the name of a node, depending on its type
 --
 property : nodeName { 
-    ""; 
+    nil; 
     get='public'; 
-    set='protected' 
+    set='protected';
+    type='string';
 }
 
 --
@@ -166,8 +167,8 @@ property : textContent {
 --
 -- Class Construct
 --
-function private:__construct(NODETYPE)     
-    if type(NODETYPE) == "number" then
+function private:__construct(NODETYPE) 
+    if type(NODETYPE) == "number" then        
         self.nodeType = NODETYPE
     else
         error("NodeType must be a number")
@@ -243,7 +244,11 @@ end
 -- Returns true if the specified node has any child nodes, otherwise false
 --
 function public:hasChildNodes()
-    error("Method Not Yet Implimented")
+    if self.childNodes.length > 0 then
+        return true
+    else
+        return false
+    end
 end
 
 --
@@ -335,8 +340,24 @@ end
 --
 -- Returns a NodeList of all elements with a specified name
 --
-function public:getElementsByTagName()
-    error("Method Not Yet Implimented")
+function public:getElementsByTagName(TAGNAME)
+    local nodelist = DOMNodeList()
+    local targetElement = self
+    
+    if targetElement.nodeType == 1 and targetElement.tagName == TAGNAME then
+        nodelist:add(targetElement)
+    end
+    
+    if targetElement:hasChildNodes() then        
+        for a=1, targetElement.childNodes.length do
+            local childNodes = targetElement.childNodes[a]:getElementsByTagName(TAGNAME)
+            for b=1, childNodes.length do
+                nodelist:add(childNodes[b])
+            end
+        end
+    end
+
+    return nodelist
 end
 
 --
