@@ -1,14 +1,6 @@
-require('libxml.libxml')
+libxml = require('xml.init')
 
--- Check if we are testing love2d or standard lua
-if love ~= nil then
-    function love.load()
-       xmldoc = libxml.load("player.xml")
-       name = xmldoc.documentElement.childNodes[1].getAttribute("name")       
-       print(name)
-    end
-else
-    xmldoc = libxml.load("tests//player.xml")
-    print(xmldoc.documentElement.childNodes[1].getAttribute("name"))
+local elements = {}
+for a=1, 100000 do
+    table.insert(elements, libxml.dom.Element("div"))
 end
-
