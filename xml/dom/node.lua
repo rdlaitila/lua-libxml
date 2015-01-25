@@ -15,7 +15,7 @@ property : attributes {
     nil; 
     get='public'; 
     set='protected';
-    type=DOMNamedNodeMap
+    type='table'
 }
 
 --
@@ -34,7 +34,7 @@ property : childNodes {
     nil; 
     get='public'; 
     set='protected';
-    type=DOMNodeList
+    type='table'
 }
 
 --
